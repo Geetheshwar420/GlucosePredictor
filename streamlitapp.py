@@ -1,4 +1,4 @@
-import streamlit as st
+'''import streamlit as st
 import numpy as np
 import tensorflow as tf
 import pickle
@@ -91,3 +91,84 @@ def predict_glucose():
 # ✅ Predict Button
 if st.button("Predict"):
     predict_glucose()
+
+
+'''
+
+import streamlit as st
+import google.generativeai as genai
+import matplotlib.pyplot as plt
+import numpy as np
+
+# 🔹 Configure Gemini API
+GEMINI_API_KEY = "YOUR-API-KEY"  # 🔥 Replace with your actual API Key
+genai.configure(api_key=GEMINI_API_KEY)
+
+# 🔹 Streamlit UI
+st.title("🩺 Glucose Health Monitoring System")
+
+st.markdown("### Enter Your Last 3 Glucose Readings (mg/dL)")
+
+# ✅ User Input (3 Glucose Readings with Limits)
+glucose_values = [
+    st.number_input(f"Glucose Reading {i+1}", min_value=70, max_value=300, step=1) for i in range(3)
+]
+
+# 🔹 Show Warning Message
+st.warning("Input the values between the 70 to 300 (mg/dL) range.") 
+
+if st.button("Predict"):
+    try:
+        # 🔹 Generate prompt for Gemini AI
+        prompt = f"""
+        Given the following glucose readings: {glucose_values}, predict the glucose level 
+        and provide a structured health assessment. The response should only include:
+        - **Predicted Glucose Level** (numeric value in mg/dL)
+        - **Disease Status** (e.g., Hypoglycemia, Normal, Hyperglycemia)
+        - **Risk Level** (High, Medium, Low)
+        - **Symptoms** (if any)
+        - **Prevention Measures**
+        - **Medication Guidance**
+        
+        Do **not** include any disclaimers or extra information.
+        """
+
+        # 🔹 Call Gemini AI
+        model = genai.GenerativeModel("gemini-1.5-pro")
+        response = model.generate_content(prompt)
+
+
+          # ✅ Display Results with Proper Formatting
+        st.markdown(response.text.replace("**", "\n"))
+
+               # 📈 PLOT GRAPH
+        fig, ax = plt.subplots(figsize=(6, 4))
+
+        # 🔹 Plot user glucose readings
+        time_steps = np.arange(1, 4)
+        ax.plot(time_steps, glucose_values, marker="o", linestyle="-", color="blue", label="Glucose Readings")
+
+        # 🔹 Normal Range Shading (70-140 mg/dL)
+        ax.axhspan(70, 140, color="green", alpha=0.2, label="Normal Range (70-140 mg/dL)")
+
+        # 🔹 Mark Points with Colors Based on Risk
+        for i, value in enumerate(glucose_values):
+            if value < 70:
+                ax.scatter(time_steps[i], value, color="red", label="Low (Hypoglycemia)" if i == 0 else "")
+            elif value > 140:
+                ax.scatter(time_steps[i], value, color="orange", label="High (Hyperglycemia)" if i == 0 else "")
+
+        # 🔹 Labels & Legend
+        ax.set_xlabel("Time (Readings)")
+        ax.set_ylabel("Glucose Level (mg/dL)")
+        ax.set_title("Glucose Level Trend")
+        ax.legend()
+        ax.grid(True, linestyle="--", alpha=0.6)
+
+        # ✅ Show Plot
+        st.pyplot(fig)
+
+
+    except Exception as e:
+        st.error(f"❌ Error: {e}")
+

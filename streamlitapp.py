@@ -101,7 +101,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # 🔹 Configure Gemini API
-GEMINI_API_KEY = "YOUR-API-KEY"  # 🔥 Replace with your actual API Key
+GEMINI_API_KEY = "AIzaSyDDEj5PENsgzt5fXto_-o5ney9Yacj9qa8"  # 🔥 Replace with your actual API Key
 genai.configure(api_key=GEMINI_API_KEY)
 
 # 🔹 Streamlit UI

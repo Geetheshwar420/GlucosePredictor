@@ -4,4 +4,3 @@ numpy
 pandas
 scikit-learn
 matplotlib
-pickle

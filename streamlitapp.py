@@ -117,7 +117,7 @@ glucose_values = [
 # 🔹 Show Warning Message
 st.warning("Input the values between the 70 to 300 (mg/dL) range.") 
 
-if st.button("Predict"):
+if st.button("Analyze"):
     try:
         # 🔹 Generate prompt for Gemini AI
         prompt = f"""
